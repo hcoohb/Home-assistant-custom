@@ -1,6 +1,7 @@
 # Home-assistant-custom
-Custom UI components for home-assistant
-
+Custom UI components for home-assistant  
+[state-card-custom-password-group](https://github.com/hcoohb/Home-assistant-custom#state-card-custom-password-group)  
+[state-card-custom-toggle-url](https://github.com/hcoohb/Home-assistant-custom#state-card-custom-toggle-url)
 
 ## state-card-custom-password-group
 This custom input_text allows to hide/show another group card. Automatically hide the group at page loading.  
@@ -13,6 +14,13 @@ It seems to work quite well, but be aware that it might not hide the desired gro
 
 * #### Installation
 copy the file [**state-card-custom-password-group.html**](www/custom_ui/state-card-custom-password-group.html) into **~/.hone-assistant/www/custom_ui/**
+
+Make sure that the file is loaded in your configuration.yaml:
+```yaml
+frontend:
+  extra_html_url:
+    - /local/custom_ui/state-card-custom-password-group.html
+```
 
 * #### Configuration
 For this configuration example, we need to create and display the input_text.showprinter.
@@ -47,3 +55,43 @@ type '**hide**' (already pre-typed) and 'Enter' to hide the group again
 2. The group to be hidden still is displayed for a few ms before being hidden
 3. If the hidden group was by itself on a colum, the empty column is still displayed...
 4. no other known. Please report if you notice something else
+
+## state-card-custom-toggle-url
+This custom toggle adds a link to the name, opened in a new window when clicked.
+![alt text](https://github.com/hcoohb/Home-assistant-custom/raw/master/screenshots/ha-toggle-url.png "state-card-custom-toggle-url")
+
+* #### Installation
+copy the file [**state-card-custom-toggle-url.html**](www/custom_ui/state-card-custom-toggle-url.html) into **~/.hone-assistant/www/custom_ui/**
+
+Make sure that the file is loaded in your configuration.yaml:
+```yaml
+frontend:
+  extra_html_url:
+    - /local/custom_ui/state-card-custom-toggle-url.html
+```
+
+* #### Configuration
+Configure the switch as required. for example, this is my command line switch.  
+
+```yaml
+- platform: command_line
+  switches:
+    grafana:
+      command_on: "~/grafana.sh start"
+      command_off: "~/grafana.sh stop"
+      command_state: "~/grafana.sh status"
+      value_template: '{{ value >= "1" }}'
+      friendly_name: Grafana
+```
+
+And add into the 'customize' section:
+```yaml
+switch.grafana:
+  icon: mdi:chart-areaspline
+  custom_ui_state_card: state-card-custom-toggle-url
+  url: https://grafana.yourdomain.com
+```
+the url can also contain, **localhost** keyword which will be replaced by the 'window.location.hostname' of the HASS page. (useful if you access from inside or outside the LAN, as long as the service and HASS are on the same machine)
+
+Restart HASS  
+A hard reload might be needed for the browser to take the changes into account
