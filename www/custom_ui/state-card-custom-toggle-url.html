@@ -1,0 +1,104 @@
+<dom-module id="state-card-custom-toggle-url">
+  <template>
+    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style>
+      ha-entity-toggle {
+        margin-left: 16px;
+      }
+      :host {
+      @apply(--paper-font-body1);
+      min-width: 150px;
+      white-space: nowrap;
+    }
+
+    state-badge {
+      float: left;
+    }
+
+    .info {
+      margin-left: 56px;
+    }
+
+    .name {
+      @apply(--paper-font-common-nowrap);
+      color: var(--primary-text-color);
+      line-height: 40px;
+    }
+    .nameurl {
+        @apply(--paper-font-common-nowrap);
+        @apply(--paper-font-body1);
+        color: var(--primary-color);
+
+        text-transform: capitalize;
+        line-height: 40px;
+      }
+    .name[in-dialog], :host([secondary-line]) .name {
+      line-height: 20px;
+    }
+
+    .time-ago, ::slotted(*) {
+      @apply(--paper-font-common-nowrap);
+      color: var(--secondary-text-color);
+    }
+    </style>
+
+    <div class='horizontal justified layout'>
+      <div>
+          <state-badge state-obj='[[stateObj]]'></state-badge>
+
+          <div class='info'>
+            <div class='name' in-dialog$='[[inDialog]]'><a href$='[[createURL(stateObj)]]' on-tap="handleTap" target='_blank' class='nameurl' id='link'>[[computeStateName(stateObj)]]</a></div>
+
+            <template is='dom-if' if='[[inDialog]]'>
+              <div class='time-ago'>
+                <ha-relative-time datetime='[[stateObj.last_changed]]'></ha-relative-time>
+              </div>
+            </template>
+            <template is='dom-if' if='[[!inDialog]]'>
+              <slot>
+            </template>
+          </div>
+        </div>
+      <ha-entity-toggle state-obj="[[stateObj]]" hass='[[hass]]'></ha-entity-toggle>
+    </div>
+
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'state-card-custom-toggle-url',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    inDialog: {
+      type: Boolean,
+      value: false,
+    },
+
+    stateObj: {
+      type: Object,
+    },
+    //url_str: { type: String, value: 'test2' },
+  },
+  
+  createURL: function (stateObj) {
+    var oldurl= stateObj.attributes.url
+    var newurl= oldurl.replace('localhost',window.location.hostname)
+    return newurl;
+  },
+  
+  computeStateName: function (stateObj) {
+    return window.hassUtil.computeStateName(stateObj);
+  },
+  
+  handleTap: function(ev) {
+    ev.stopPropagation();
+    ev.preventDefault();
+    window.open(this.createURL(this.stateObj), '_blank');
+  }
+});
+</script>
